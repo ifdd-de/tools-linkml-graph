@@ -1,5 +1,9 @@
 # linkml-graph-explorer
 
+[![CI](https://github.com/mleist/linkml-graph-explorer/actions/workflows/ci.yml/badge.svg)](https://github.com/mleist/linkml-graph-explorer/actions/workflows/ci.yml)
+[![License: BSD-3-Clause](https://img.shields.io/badge/license-BSD--3--Clause-green.svg)](LICENSE)
+![GitHub last commit](https://img.shields.io/github/last-commit/mleist/linkml-graph-explorer)
+
 Render [LinkML](https://linkml.io/) instance data as documents
 ([linkml-renderer](https://github.com/linkml/linkml-renderer)) and as
 **standalone interactive exploration graphs**
