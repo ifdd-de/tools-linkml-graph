@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python tools/compile_translations.py
+      - run: pip install -e ".[test]"
+      - run: linkml-validate -s schema/grid_assets.yaml -C GridModel data/circuit_sunville.yaml
+      - run: pytest -q

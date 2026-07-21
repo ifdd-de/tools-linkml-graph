@@ -1,0 +1,141 @@
+id: https://example.org/grid/assets
+name: grid_assets
+title: Example schema for grid asset graphs
+description: >-
+  Declarative example schema for a transmission-grid asset domain.
+  Object-valued slots (range = class) become the edges of the instance
+  graph; literal-valued slots become node attributes and detail texts.
+license: BSD-3-Clause
+
+prefixes:
+  grid: https://example.org/grid/assets/
+  linkml: https://w3id.org/linkml/
+default_prefix: grid
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+
+  GridModel:
+    tree_root: true
+    description: Root container holding locations, assets and circuits.
+    slots:
+      - model_name
+      - locations
+      - assets
+      - circuits
+
+  NamedObject:
+    abstract: true
+    description: Common base class of all identifiable domain objects.
+    slots:
+      - id
+      - name
+      - description
+
+  Location:
+    is_a: NamedObject
+    description: Spatial reference point, e.g. a substation.
+    slots:
+      - location_type
+      - place
+
+  Asset:
+    is_a: NamedObject
+    description: Physical piece of equipment installed at a location.
+    slots:
+      - asset_type
+      - voltage_kv
+      - commissioned_on
+      - installed_at
+      - part_of_circuit
+
+  Circuit:
+    is_a: NamedObject
+    description: Electrical connection between two locations.
+    slots:
+      - voltage_kv
+      - from_location
+      - to_location
+
+slots:
+
+  id:
+    identifier: true
+    description: Business identifier of the object.
+
+  name:
+    description: Short human-readable name, used as the node label.
+
+  description:
+    description: Detail text, shown on mouse-over (detail on demand).
+
+  model_name:
+    description: Name of the model excerpt.
+
+  place:
+    description: Geographic place of the location.
+
+  location_type:
+    range: LocationType
+
+  asset_type:
+    range: AssetType
+
+  voltage_kv:
+    range: float
+    description: Nominal voltage in kilovolts.
+
+  commissioned_on:
+    range: date
+    description: Date of commissioning.
+
+  installed_at:
+    range: Location
+    description: Mounting location of the asset.
+
+  part_of_circuit:
+    range: Circuit
+    description: Circuit the asset belongs to.
+
+  from_location:
+    range: Location
+    description: Starting point of the circuit.
+
+  to_location:
+    range: Location
+    description: End point of the circuit.
+
+  locations:
+    range: Location
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+
+  assets:
+    range: Asset
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+
+  circuits:
+    range: Circuit
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+
+enums:
+
+  LocationType:
+    permissible_values:
+      Substation:
+      SwitchingStation:
+
+  AssetType:
+    permissible_values:
+      PowerTransformer:
+      CircuitBreaker:
+      OverheadLine:
+      Cable:

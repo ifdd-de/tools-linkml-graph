@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="__LANG__">
+<head>
+<meta charset="utf-8">
+<title>__TITLE__</title>
+<script>__CYTOSCAPE_BUNDLE__</script>
+<style>
+  html, body { margin: 0; height: 100%; font-family: sans-serif; }
+  #cy { width: 100%; height: calc(100% - 3rem); }
+  #toolbar { height: 3rem; display: flex; gap: .75rem; align-items: center;
+             padding: 0 .75rem; border-bottom: 1px solid #ccc;
+             font-size: .9rem; flex-wrap: wrap; }
+  #tooltip { position: absolute; display: none; max-width: 340px;
+             background: #1f2937; color: #f9fafb; padding: .5rem .75rem;
+             border-radius: .375rem; font-size: .85rem; pointer-events: none;
+             white-space: pre-line; z-index: 10; }
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <button id="btn-reset">__L_RESET__</button>
+  <button id="btn-fit">__L_FIT__</button>
+  <button id="btn-zoom-in">+</button>
+  <button id="btn-zoom-out">&minus;</button>
+  <span style="border-left:1px solid #ccc; height:1.5rem;"></span>
+  <button id="btn-save-layout">__L_SAVE__</button>
+  <button id="btn-load-layout">__L_LOAD__</button>
+  <input type="file" id="file-layout" accept=".json,application/json"
+         style="display:none">
+  __TOGGLES__
+</div>
+<div id="cy"></div>
+<div id="tooltip"></div>
+
+<script type="application/json" id="graph-data">
+__GRAPH_DATA__
+</script>
+
+<script type="application/json" id="layout-data">
+__LAYOUT_DATA__
+</script>
+
+<script>
+(function () {
+  "use strict";
+  const data = JSON.parse(document.getElementById("graph-data").textContent);
+  const bakedLayout =
+    JSON.parse(document.getElementById("layout-data").textContent.trim());
+
+  const initialLayout = (bakedLayout && bakedLayout.positions)
+    ? { name: "preset", fit: false, animate: false,
+        positions: n => bakedLayout.positions[n.id()] || { x: 0, y: 0 } }
+    : { name: "cose", animate: false };
+
+  const cy = cytoscape({
+    container: document.getElementById("cy"),
+    elements: data,
+    style: __STYLESHEET__,
+    layout: initialLayout
+  });
+
+  function applySavedLayout(saved) {
+    cy.startBatch();
+    cy.nodes().forEach(n => {
+      const p = saved.positions && saved.positions[n.id()];
+      if (p) n.position(p);
+    });
+    cy.endBatch();
+    if (typeof saved.zoom === "number" && saved.pan) {
+      cy.viewport({ zoom: saved.zoom, pan: saved.pan });
+    } else {
+      cy.fit(undefined, 40);
+    }
+  }
+
+  function runDefaultLayout() {
+    if (bakedLayout && bakedLayout.positions) {
+      applySavedLayout(bakedLayout);
+    } else {
+      cy.layout({ name: "cose", animate: false }).run();
+      cy.fit(undefined, 40);
+    }
+  }
+
+  cy.on("tap", "node", evt => {
+    cy.elements().removeClass("highlighted");
+    evt.target.closedNeighborhood().addClass("highlighted");
+  });
+
+  const tip = document.getElementById("tooltip");
+  cy.on("mouseover", "node, edge", evt => {
+    const d = evt.target.data();
+    tip.textContent = d.detail || d.label;
+    const p = evt.target.isNode()
+      ? evt.target.renderedPosition()
+      : evt.renderedPosition;
+    tip.style.left = (p.x + 14) + "px";
+    tip.style.top  = (p.y + 14) + "px";
+    tip.style.display = "block";
+  });
+  cy.on("mouseout", "node, edge", () => { tip.style.display = "none"; });
+
+  document.querySelectorAll(".cls-toggle").forEach(cb => {
+    cb.addEventListener("change", () => {
+      const nodes = cy.nodes('[type = "' + cb.value + '"]');
+      nodes.toggleClass("hidden", !cb.checked);
+      nodes.connectedEdges().forEach(e => {
+        const bothVisible = !e.source().hasClass("hidden")
+                         && !e.target().hasClass("hidden");
+        e.toggleClass("hidden", !bothVisible);
+      });
+    });
+  });
+
+  document.getElementById("btn-reset").addEventListener("click", () => {
+    cy.elements().removeClass("hidden highlighted");
+    document.querySelectorAll(".cls-toggle").forEach(cb => cb.checked = true);
+    runDefaultLayout();
+  });
+
+  function zoomBy(factor) {
+    cy.zoom({ level: cy.zoom() * factor,
+              renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } });
+  }
+
+  document.getElementById("btn-fit")
+    .addEventListener("click", () => cy.fit(cy.elements(":visible"), 40));
+  document.getElementById("btn-zoom-in")
+    .addEventListener("click", () => zoomBy(1.25));
+  document.getElementById("btn-zoom-out")
+    .addEventListener("click", () => zoomBy(1 / 1.25));
+
+  document.getElementById("btn-save-layout").addEventListener("click", () => {
+    const positions = {};
+    cy.nodes().forEach(n => {
+      const p = n.position();
+      positions[n.id()] = { x: Math.round(p.x * 100) / 100,
+                            y: Math.round(p.y * 100) / 100 };
+    });
+    const payload = { zoom: cy.zoom(), pan: cy.pan(), positions: positions };
+    const blob = new Blob([JSON.stringify(payload, null, 1)],
+                          { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "__LAYOUT_FILENAME__";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  });
+
+  const fileInput = document.getElementById("file-layout");
+  document.getElementById("btn-load-layout")
+    .addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const saved = JSON.parse(reader.result);
+        if (!saved || typeof saved !== "object" || !saved.positions) {
+          throw new Error("expected format: {positions: {...}, zoom, pan}");
+        }
+        applySavedLayout(saved);
+      } catch (err) {
+        alert("__L_LOAD_ERROR__" + err.message);
+      } finally {
+        fileInput.value = "";
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  cy.ready(() => {
+    if (bakedLayout && bakedLayout.positions
+        && typeof bakedLayout.zoom === "number" && bakedLayout.pan) {
+      cy.viewport({ zoom: bakedLayout.zoom, pan: bakedLayout.pan });
+    } else {
+      cy.fit(undefined, 40);
+    }
+  });
+})();
+</script>
+</body>
+</html>

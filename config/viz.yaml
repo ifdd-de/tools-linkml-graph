@@ -1,0 +1,38 @@
+# Visualization configuration for the explorer export.
+# All class and slot names below are validated against the LinkML schema.
+
+label_slot: name
+detail_slot: description
+
+defaults:
+  node:
+    color: "#e5e7eb"
+    shape: round-rectangle
+  edge:
+    color: "#9ca3af"
+    line_style: solid
+
+classes:
+  Location:
+    color: "#bbf7d0"
+    shape: hexagon
+  Asset:
+    color: "#93c5fd"
+    shape: round-rectangle
+  Circuit:
+    color: "#fde68a"
+    shape: ellipse
+
+edges:
+  installed_at:
+    color: "#6b7280"
+    line_style: solid
+  part_of_circuit:
+    color: "#f59e0b"
+    line_style: dashed
+  from_location:
+    color: "#9ca3af"
+    line_style: solid
+  to_location:
+    color: "#9ca3af"
+    line_style: solid

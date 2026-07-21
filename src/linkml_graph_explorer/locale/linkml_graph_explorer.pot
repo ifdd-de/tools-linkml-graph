@@ -1,0 +1,30 @@
+# Message template for linkml-graph-explorer.
+# Copy to locale/<lang>/LC_MESSAGES/linkml_graph_explorer.po, translate the
+# msgstr entries, then run: python tools/compile_translations.py
+msgid ""
+msgstr ""
+"Project-Id-Version: linkml-graph-explorer\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "wrote {path}"
+msgstr ""
+
+msgid "Graph exploration"
+msgstr ""
+
+msgid "Default view"
+msgstr ""
+
+msgid "Fit"
+msgstr ""
+
+msgid "Save layout"
+msgstr ""
+
+msgid "Load layout"
+msgstr ""
+
+msgid "Could not read layout file: "
+msgstr ""

@@ -1,0 +1,77 @@
+model_name: Example excerpt Sunville-Loadstead
+
+locations:
+  - id: SUB-SNV
+    name: Sunville substation
+    description: >-
+      380/110 kV substation at the western edge of Sunville.
+      Grid connection point of the example circuit.
+    location_type: Substation
+    place: Sunville
+
+  - id: SUB-LST
+    name: Loadstead substation
+    description: >-
+      380/110 kV substation supplying the town of Loadstead.
+      End point of the example circuit.
+    location_type: Substation
+    place: Loadstead
+
+  - id: SWS-MID
+    name: Midfield switching station
+    description: Switching station without transformation, route midpoint.
+    location_type: SwitchingStation
+    place: Midfield
+
+circuits:
+  - id: CIR-380-01
+    name: Circuit Sunville-Loadstead
+    description: >-
+      380 kV circuit between Sunville and Loadstead substation.
+      Fictional example for documentation purposes.
+    voltage_kv: 380
+    from_location: SUB-SNV
+    to_location: SUB-LST
+
+assets:
+  - id: AST-T1
+    name: Transformer T1
+    description: 300 MVA power transformer, 380/110 kV, built in 1998.
+    asset_type: PowerTransformer
+    voltage_kv: 380
+    commissioned_on: "1998-06-15"
+    installed_at: SUB-SNV
+
+  - id: AST-T2
+    name: Transformer T2
+    description: 300 MVA power transformer, 380/110 kV, built in 2003.
+    asset_type: PowerTransformer
+    voltage_kv: 380
+    commissioned_on: "2003-09-01"
+    installed_at: SUB-LST
+
+  - id: AST-Q1
+    name: Circuit breaker Q1
+    description: SF6 circuit breaker in the Sunville feeder bay.
+    asset_type: CircuitBreaker
+    voltage_kv: 380
+    commissioned_on: "2010-04-20"
+    installed_at: SUB-SNV
+    part_of_circuit: CIR-380-01
+
+  - id: AST-L1
+    name: Overhead line L-380-01
+    description: Overhead line section Sunville-Midfield, quad bundle, 42 km.
+    asset_type: OverheadLine
+    voltage_kv: 380
+    commissioned_on: "1998-06-15"
+    part_of_circuit: CIR-380-01
+
+  - id: AST-C1
+    name: Cable C-380-01
+    description: Underground cable section Midfield-Loadstead, XLPE, 8 km.
+    asset_type: Cable
+    voltage_kv: 380
+    commissioned_on: "2015-11-30"
+    installed_at: SWS-MID
+    part_of_circuit: CIR-380-01

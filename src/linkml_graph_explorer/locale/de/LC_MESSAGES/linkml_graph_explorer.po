@@ -1,0 +1,29 @@
+# German translation for linkml-graph-explorer.
+msgid ""
+msgstr ""
+"Project-Id-Version: linkml-graph-explorer\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "wrote {path}"
+msgstr "geschrieben: {path}"
+
+msgid "Graph exploration"
+msgstr "Graphenexploration"
+
+msgid "Default view"
+msgstr "Standarddarstellung"
+
+msgid "Fit"
+msgstr "Einpassen"
+
+msgid "Save layout"
+msgstr "Layout speichern"
+
+msgid "Load layout"
+msgstr "Layout laden"
+
+msgid "Could not read layout file: "
+msgstr "Layout-Datei konnte nicht gelesen werden: "
