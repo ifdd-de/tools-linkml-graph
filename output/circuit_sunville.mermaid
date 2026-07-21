@@ -1,0 +1,78 @@
+graph TB
+    ANON__fGridModel_1(GridModel<br><b>model_name</b> Example excerpt Sunville-Loadstead)
+    ANON__fLocation_2{ }
+    SUB-SNV(Location<br><b>location_type</b> Substation)
+    SUB-SNV(Location<br><b>location_type</b> Substation<br><b>place</b> Sunville)
+    SUB-SNV(Location<br><b>location_type</b> Substation<br><b>place</b> Sunville<br><b>id</b> SUB-SNV)
+    SUB-SNV(Location<br><b>location_type</b> Substation<br><b>place</b> Sunville<br><b>id</b> SUB-SNV<br><b>name</b> Sunville substation)
+    SUB-SNV(Location<br><b>location_type</b> Substation<br><b>place</b> Sunville<br><b>id</b> SUB-SNV<br><b>name</b> Sunville substation<br><b>description</b> 380/110 kV substation at the western edge of Sunville. Grid connection point of the example circuit.)
+    ANON__fLocation_2 -.-> SUB-SNV
+    SUB-LST(Location<br><b>location_type</b> Substation)
+    SUB-LST(Location<br><b>location_type</b> Substation<br><b>place</b> Loadstead)
+    SUB-LST(Location<br><b>location_type</b> Substation<br><b>place</b> Loadstead<br><b>id</b> SUB-LST)
+    SUB-LST(Location<br><b>location_type</b> Substation<br><b>place</b> Loadstead<br><b>id</b> SUB-LST<br><b>name</b> Loadstead substation)
+    SUB-LST(Location<br><b>location_type</b> Substation<br><b>place</b> Loadstead<br><b>id</b> SUB-LST<br><b>name</b> Loadstead substation<br><b>description</b> 380/110 kV substation supplying the town of Loadstead. End point of the example circuit.)
+    ANON__fLocation_2 -.-> SUB-LST
+    SWS-MID(Location<br><b>location_type</b> SwitchingStation)
+    SWS-MID(Location<br><b>location_type</b> SwitchingStation<br><b>place</b> Midfield)
+    SWS-MID(Location<br><b>location_type</b> SwitchingStation<br><b>place</b> Midfield<br><b>id</b> SWS-MID)
+    SWS-MID(Location<br><b>location_type</b> SwitchingStation<br><b>place</b> Midfield<br><b>id</b> SWS-MID<br><b>name</b> Midfield switching station)
+    SWS-MID(Location<br><b>location_type</b> SwitchingStation<br><b>place</b> Midfield<br><b>id</b> SWS-MID<br><b>name</b> Midfield switching station<br><b>description</b> Switching station without transformation, route midpoint.)
+    ANON__fLocation_2 -.-> SWS-MID
+    ANON__fGridModel_1 -- locations --> ANON__fLocation_2
+    ANON__fGridModel_1(GridModel<br><b>model_name</b> Example excerpt Sunville-Loadstead)
+    ANON__fAsset_3{ }
+    AST-T1(Asset<br><b>asset_type</b> PowerTransformer)
+    AST-T1(Asset<br><b>asset_type</b> PowerTransformer<br><b>voltage_kv</b> 380)
+    AST-T1(Asset<br><b>asset_type</b> PowerTransformer<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 1998-06-15)
+    AST-T1(Asset<br><b>asset_type</b> PowerTransformer<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 1998-06-15<br><b>installed_at</b> SUB-SNV)
+    AST-T1(Asset<br><b>asset_type</b> PowerTransformer<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 1998-06-15<br><b>installed_at</b> SUB-SNV<br><b>id</b> AST-T1)
+    AST-T1(Asset<br><b>asset_type</b> PowerTransformer<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 1998-06-15<br><b>installed_at</b> SUB-SNV<br><b>id</b> AST-T1<br><b>name</b> Transformer T1)
+    AST-T1(Asset<br><b>asset_type</b> PowerTransformer<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 1998-06-15<br><b>installed_at</b> SUB-SNV<br><b>id</b> AST-T1<br><b>name</b> Transformer T1<br><b>description</b> 300 MVA power transformer, 380/110 kV, built in 1998.)
+    ANON__fAsset_3 -.-> AST-T1
+    AST-T2(Asset<br><b>asset_type</b> PowerTransformer)
+    AST-T2(Asset<br><b>asset_type</b> PowerTransformer<br><b>voltage_kv</b> 380)
+    AST-T2(Asset<br><b>asset_type</b> PowerTransformer<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2003-09-01)
+    AST-T2(Asset<br><b>asset_type</b> PowerTransformer<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2003-09-01<br><b>installed_at</b> SUB-LST)
+    AST-T2(Asset<br><b>asset_type</b> PowerTransformer<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2003-09-01<br><b>installed_at</b> SUB-LST<br><b>id</b> AST-T2)
+    AST-T2(Asset<br><b>asset_type</b> PowerTransformer<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2003-09-01<br><b>installed_at</b> SUB-LST<br><b>id</b> AST-T2<br><b>name</b> Transformer T2)
+    AST-T2(Asset<br><b>asset_type</b> PowerTransformer<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2003-09-01<br><b>installed_at</b> SUB-LST<br><b>id</b> AST-T2<br><b>name</b> Transformer T2<br><b>description</b> 300 MVA power transformer, 380/110 kV, built in 2003.)
+    ANON__fAsset_3 -.-> AST-T2
+    AST-Q1(Asset<br><b>asset_type</b> CircuitBreaker)
+    AST-Q1(Asset<br><b>asset_type</b> CircuitBreaker<br><b>voltage_kv</b> 380)
+    AST-Q1(Asset<br><b>asset_type</b> CircuitBreaker<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2010-04-20)
+    AST-Q1(Asset<br><b>asset_type</b> CircuitBreaker<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2010-04-20<br><b>installed_at</b> SUB-SNV)
+    AST-Q1(Asset<br><b>asset_type</b> CircuitBreaker<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2010-04-20<br><b>installed_at</b> SUB-SNV<br><b>part_of_circuit</b> CIR-380-01)
+    AST-Q1(Asset<br><b>asset_type</b> CircuitBreaker<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2010-04-20<br><b>installed_at</b> SUB-SNV<br><b>part_of_circuit</b> CIR-380-01<br><b>id</b> AST-Q1)
+    AST-Q1(Asset<br><b>asset_type</b> CircuitBreaker<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2010-04-20<br><b>installed_at</b> SUB-SNV<br><b>part_of_circuit</b> CIR-380-01<br><b>id</b> AST-Q1<br><b>name</b> Circuit breaker Q1)
+    AST-Q1(Asset<br><b>asset_type</b> CircuitBreaker<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2010-04-20<br><b>installed_at</b> SUB-SNV<br><b>part_of_circuit</b> CIR-380-01<br><b>id</b> AST-Q1<br><b>name</b> Circuit breaker Q1<br><b>description</b> SF6 circuit breaker in the Sunville feeder bay.)
+    ANON__fAsset_3 -.-> AST-Q1
+    AST-L1(Asset<br><b>asset_type</b> OverheadLine)
+    AST-L1(Asset<br><b>asset_type</b> OverheadLine<br><b>voltage_kv</b> 380)
+    AST-L1(Asset<br><b>asset_type</b> OverheadLine<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 1998-06-15)
+    AST-L1(Asset<br><b>asset_type</b> OverheadLine<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 1998-06-15<br><b>part_of_circuit</b> CIR-380-01)
+    AST-L1(Asset<br><b>asset_type</b> OverheadLine<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 1998-06-15<br><b>part_of_circuit</b> CIR-380-01<br><b>id</b> AST-L1)
+    AST-L1(Asset<br><b>asset_type</b> OverheadLine<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 1998-06-15<br><b>part_of_circuit</b> CIR-380-01<br><b>id</b> AST-L1<br><b>name</b> Overhead line L-380-01)
+    AST-L1(Asset<br><b>asset_type</b> OverheadLine<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 1998-06-15<br><b>part_of_circuit</b> CIR-380-01<br><b>id</b> AST-L1<br><b>name</b> Overhead line L-380-01<br><b>description</b> Overhead line section Sunville-Midfield, quad bundle, 42 km.)
+    ANON__fAsset_3 -.-> AST-L1
+    AST-C1(Asset<br><b>asset_type</b> Cable)
+    AST-C1(Asset<br><b>asset_type</b> Cable<br><b>voltage_kv</b> 380)
+    AST-C1(Asset<br><b>asset_type</b> Cable<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2015-11-30)
+    AST-C1(Asset<br><b>asset_type</b> Cable<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2015-11-30<br><b>installed_at</b> SWS-MID)
+    AST-C1(Asset<br><b>asset_type</b> Cable<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2015-11-30<br><b>installed_at</b> SWS-MID<br><b>part_of_circuit</b> CIR-380-01)
+    AST-C1(Asset<br><b>asset_type</b> Cable<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2015-11-30<br><b>installed_at</b> SWS-MID<br><b>part_of_circuit</b> CIR-380-01<br><b>id</b> AST-C1)
+    AST-C1(Asset<br><b>asset_type</b> Cable<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2015-11-30<br><b>installed_at</b> SWS-MID<br><b>part_of_circuit</b> CIR-380-01<br><b>id</b> AST-C1<br><b>name</b> Cable C-380-01)
+    AST-C1(Asset<br><b>asset_type</b> Cable<br><b>voltage_kv</b> 380<br><b>commissioned_on</b> 2015-11-30<br><b>installed_at</b> SWS-MID<br><b>part_of_circuit</b> CIR-380-01<br><b>id</b> AST-C1<br><b>name</b> Cable C-380-01<br><b>description</b> Underground cable section Midfield-Loadstead, XLPE, 8 km.)
+    ANON__fAsset_3 -.-> AST-C1
+    ANON__fGridModel_1 -- assets --> ANON__fAsset_3
+    ANON__fGridModel_1(GridModel<br><b>model_name</b> Example excerpt Sunville-Loadstead)
+    ANON__fCircuit_4{ }
+    CIR-380-01(Circuit<br><b>voltage_kv</b> 380)
+    CIR-380-01(Circuit<br><b>voltage_kv</b> 380<br><b>from_location</b> SUB-SNV)
+    CIR-380-01(Circuit<br><b>voltage_kv</b> 380<br><b>from_location</b> SUB-SNV<br><b>to_location</b> SUB-LST)
+    CIR-380-01(Circuit<br><b>voltage_kv</b> 380<br><b>from_location</b> SUB-SNV<br><b>to_location</b> SUB-LST<br><b>id</b> CIR-380-01)
+    CIR-380-01(Circuit<br><b>voltage_kv</b> 380<br><b>from_location</b> SUB-SNV<br><b>to_location</b> SUB-LST<br><b>id</b> CIR-380-01<br><b>name</b> Circuit Sunville-Loadstead)
+    CIR-380-01(Circuit<br><b>voltage_kv</b> 380<br><b>from_location</b> SUB-SNV<br><b>to_location</b> SUB-LST<br><b>id</b> CIR-380-01<br><b>name</b> Circuit Sunville-Loadstead<br><b>description</b> 380 kV circuit between Sunville and Loadstead substation. Fictional example for documentation purposes.)
+    ANON__fCircuit_4 -.-> CIR-380-01
+    ANON__fGridModel_1 -- circuits --> ANON__fCircuit_4
+    ANON__fGridModel_1(GridModel<br><b>model_name</b> Example excerpt Sunville-Loadstead)
