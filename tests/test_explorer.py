@@ -49,8 +49,8 @@ def test_render_creates_selfcontained_html(
     assert embedded_json(html, "layout-data") is None
 
     graph_data = embedded_json(html, "graph-data")
-    assert len(graph_data["nodes"]) == 9
-    assert len(graph_data["edges"]) == 9
+    assert len(graph_data["nodes"]) == 10
+    assert len(graph_data["edges"]) == 13
     assert html.count('class="cls-toggle"') == 3
 
 
@@ -90,7 +90,7 @@ def test_every_toolbar_button_has_a_click_handler(
     )
     html = target.read_text(encoding="utf-8")
     button_ids = re.findall(r'<button id="([^"]+)"', html)
-    assert len(button_ids) == 6
+    assert len(button_ids) == 7
     for button_id in button_ids:
         assert f'getElementById("{button_id}")' in html, (
             f"button {button_id!r} has no event handler"
@@ -108,3 +108,41 @@ def test_render_translates_ui_strings(
     assert "Layout speichern" in html
     assert "Standarddarstellung" in html
     assert '<html lang="de">' in html
+
+
+def test_only_configured_engines_are_embedded(
+    schema_path, data_path, tmp_path, schema_view
+):
+    fcose_only = tmp_path / "viz.yaml"
+    fcose_only.write_text(
+        "layout:\n  engines:\n    fcose: {}\n", encoding="utf-8"
+    )
+    target = render_explorer_html(
+        schema_path, data_path, fcose_only, tmp_path, "GridModel"
+    )
+    html = target.read_text(encoding="utf-8")
+    assert "cytoscapeFcose" in html
+    assert "cytoscapeElk" not in html
+    assert '<option value="fcose" selected>' in html
+    assert 'id="compact-toggle"' not in html
+
+
+def test_elk_engine_is_embedded_when_configured(
+    schema_path, data_path, viz_config_path, tmp_path
+):
+    target = render_explorer_html(
+        schema_path, data_path, viz_config_path, tmp_path, "GridModel"
+    )
+    html = target.read_text(encoding="utf-8")
+    assert "cytoscapeElk" in html
+    assert '<option value="elk">' in html
+    assert 'id="compact-toggle"' in html
+    assert 'id="btn-png"' in html
+
+
+def test_stylesheet_hides_derived_edges_by_default(viz_config):
+    stylesheet = build_stylesheet(viz_config, ["Circuit"], [])
+    rules = {rule["selector"]: rule["style"] for rule in stylesheet}
+    assert rules["edge.derived"]["display"] == "none"
+    assert rules["edge.derived.compact"]["display"] == "element"
+    assert rules['edge[relation = "Circuit"]']["line-color"] == "#fde68a"

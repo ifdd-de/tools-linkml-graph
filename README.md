@@ -61,7 +61,7 @@ graph-explorer all --schema schema/grid_assets.yaml \
 |---|---|---|
 | `circuit_sunville.html` | linkml-renderer | Tabular HTML view of the instance data |
 | `circuit_sunville.md` | linkml-renderer | Markdown view |
-| `circuit_sunville_explorer.html` | explorer | **Standalone** exploration graph: single file, works offline, node/edge tooltips, class toggles, default view/fit/zoom, layout save & load |
+| `circuit_sunville_explorer.html` | explorer | **Standalone** exploration graph: single file, works offline, node/edge tooltips, class toggles, switchable layout engines, compact view, default view/fit/zoom, layout save & load, PNG export |
 
 ## Visualization configuration
 
@@ -84,6 +84,53 @@ edges:
 Shapes and line styles are passed through to Cytoscape.js
 (`round-rectangle`, `hexagon`, `ellipse`, …; `solid`, `dashed`, `dotted`).
 
+### Layout engines
+
+```yaml
+layout:
+  default: fcose
+  engines:
+    fcose:
+      nodeDimensionsIncludeLabels: true
+      idealEdgeLength: 70
+      degreeScaledEdgeLength: true   # hub edges get longer edges
+    elk:
+      elk: { algorithm: layered, elk.direction: RIGHT }
+```
+
+Only the engines listed here are embedded into the standalone HTML, and a
+toolbar dropdown switches between them at runtime. Measured impact on the
+generated file: fcose adds roughly 0.3 MB, ELK roughly 1.6 MB (fcose-only
+export ≈ 0.75 MB, both engines ≈ 2.3 MB). All options are passed through to
+the engine unchanged, with one convenience extension: for fcose,
+`degreeScaledEdgeLength: true` replaces `idealEdgeLength` by a per-edge
+function that lengthens edges at high-degree nodes — this untangles the
+typical hub fans of infrastructure graphs. `elk` options live in the nested
+`elk` object using ELK's own option keys. Without a `layout` section the
+default is a plain fcose. A layout file baked in via `--positions` still
+wins as the initial and default view.
+
+### Compact view (collapsing reified relations)
+
+Domain models often reify relations as classes — in the example, `Circuit`
+is exactly that: an object linking two locations. The `collapse` section
+declares such classes and their endpoint slots:
+
+```yaml
+collapse:
+  Circuit: { source_slot: from_location, target_slot: to_location }
+```
+
+The export then contains, in addition to the regular elements, one derived
+edge per instance (styled in the class color, labeled with the instance
+name, full detail text on mouse-over). A *Compact view* toolbar checkbox
+switches between the reified representation and the contracted one; the
+control only appears when `collapse` is configured. This is deliberately a
+global toggle, not per-node plus/minus expanders: a reified relation
+belongs to a *pair* of nodes, so there is no single node to anchor an
+expander on — per-node expand/collapse is a hierarchy pattern and does not
+apply to general (cyclic) association graphs.
+
 ## Layout: move, save, load
 
 Nodes are freely draggable. The layout cycle is entirely file based:
@@ -103,6 +150,17 @@ Nodes are freely draggable. The layout cycle is entirely file based:
 
 Nodes missing from the layout file start at the origin (0, 0) — after
 schema or data extensions, rearrange once and save again.
+
+## Image export
+
+The *PNG* button downloads the currently visible viewport as a PNG
+(2x scale, white background) via the native `cy.png()` core API — no
+additional dependency. SVG export was evaluated and deliberately left out:
+the only established extension, `cytoscape-svg`, is GPLv3-licensed, which
+conflicts with distributing it inside this BSD-3-Clause project's
+single-file HTML output. If you need SVG and can accept GPLv3 terms for
+your own deployment, the extension can be added locally without code
+changes to this project's Python side.
 
 ## Internationalization
 
@@ -149,12 +207,15 @@ linkml-graph-explorer/
 │   ├── i18n.py                    # gettext-based translation
 │   ├── template.html              # explorer template (placeholders)
 │   ├── locale/                    # .pot template, per-language .po/.mo
-│   └── vendor/cytoscape.min.js    # Cytoscape.js (MIT), offline vendoring
+│   └── vendor/                    # Cytoscape.js (MIT), fcose stack (MIT),
+│                                  #   cytoscape-elk (MIT), elkjs (EPL-2.0)
 ├── tests/                         # pytest suite covering all modules
 └── tools/compile_translations.py  # stdlib .po -> .mo compiler
 ```
 
 ## License
 
-BSD 3-Clause, see [LICENSE](LICENSE). The bundled Cytoscape.js is MIT
-licensed (see `src/linkml_graph_explorer/vendor/CYTOSCAPE-LICENSE`).
+BSD 3-Clause, see [LICENSE](LICENSE). Bundled third-party components keep
+their own licenses in `src/linkml_graph_explorer/vendor/`: Cytoscape.js,
+cytoscape-fcose (with layout-base/cose-base) and cytoscape-elk are MIT;
+elkjs is EPL-2.0.

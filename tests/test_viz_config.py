@@ -52,3 +52,63 @@ def test_unknown_label_slot_is_rejected(tmp_path, schema_view):
     bad.write_text("label_slot: no_such_slot\n", encoding="utf-8")
     with pytest.raises(ValueError, match="label_slot"):
         load_viz_config(bad, schema_view)
+
+
+def test_layout_section_is_parsed(viz_config):
+    assert viz_config.layout.default == "fcose"
+    assert set(viz_config.layout.engines) == {"fcose", "elk"}
+    assert viz_config.layout.engines["elk"]["elk"]["algorithm"] == "layered"
+
+
+def test_missing_layout_section_defaults_to_fcose(tmp_path, schema_view):
+    minimal = tmp_path / "viz.yaml"
+    minimal.write_text("{}", encoding="utf-8")
+    config = load_viz_config(minimal, schema_view)
+    assert config.layout.default == "fcose"
+    assert config.layout.engines == {"fcose": {}}
+    assert config.collapse == {}
+
+
+def test_unknown_engine_is_rejected(tmp_path, schema_view):
+    bad = tmp_path / "viz.yaml"
+    bad.write_text("layout:\n  engines:\n    dagre: {}\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="dagre"):
+        load_viz_config(bad, schema_view)
+
+
+def test_default_engine_must_be_configured(tmp_path, schema_view):
+    bad = tmp_path / "viz.yaml"
+    bad.write_text(
+        "layout:\n  default: elk\n  engines:\n    fcose: {}\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="default engine"):
+        load_viz_config(bad, schema_view)
+
+
+def test_collapse_is_parsed(viz_config):
+    rule = viz_config.collapse["Circuit"]
+    assert (rule.source_slot, rule.target_slot) == \
+        ("from_location", "to_location")
+
+
+def test_collapse_unknown_class_is_rejected(tmp_path, schema_view):
+    bad = tmp_path / "viz.yaml"
+    bad.write_text(
+        "collapse:\n  NoSuchClass:\n    source_slot: from_location\n"
+        "    target_slot: to_location\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="NoSuchClass"):
+        load_viz_config(bad, schema_view)
+
+
+def test_collapse_slot_must_be_object_valued(tmp_path, schema_view):
+    bad = tmp_path / "viz.yaml"
+    bad.write_text(
+        "collapse:\n  Circuit:\n    source_slot: voltage_kv\n"
+        "    target_slot: to_location\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="voltage_kv"):
+        load_viz_config(bad, schema_view)

@@ -33,6 +33,15 @@ circuits:
     from_location: SUB-SNV
     to_location: SUB-LST
 
+  - id: CIR-380-02
+    name: Circuit Sunville-Midfield
+    description: >-
+      380 kV circuit between Sunville substation and Midfield switching
+      station. Second example circuit for the compact view.
+    voltage_kv: 380
+    from_location: SUB-SNV
+    to_location: SWS-MID
+
 assets:
   - id: AST-T1
     name: Transformer T1

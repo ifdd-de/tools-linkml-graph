@@ -9,6 +9,9 @@ import yaml
 from linkml_runtime import SchemaView
 
 
+KNOWN_ENGINES = ("fcose", "elk")
+
+
 @dataclass(frozen=True)
 class NodeStyle:
     color: str
@@ -22,6 +25,18 @@ class EdgeStyle:
 
 
 @dataclass(frozen=True)
+class CollapseRule:
+    source_slot: str
+    target_slot: str
+
+
+@dataclass(frozen=True)
+class LayoutConfig:
+    default: str
+    engines: dict[str, dict]
+
+
+@dataclass(frozen=True)
 class VizConfig:
     label_slot: str
     detail_slot: str
@@ -29,6 +44,8 @@ class VizConfig:
     default_edge: EdgeStyle
     class_styles: dict[str, NodeStyle]
     edge_styles: dict[str, EdgeStyle]
+    layout: LayoutConfig
+    collapse: dict[str, CollapseRule]
 
     def node_style(self, class_name: str) -> NodeStyle:
         return self.class_styles.get(class_name, self.default_node)
@@ -61,9 +78,22 @@ def load_viz_config(path: Path, schema_view: SchemaView) -> VizConfig:
             name: _edge_style(style, default_edge)
             for name, style in (raw.get("edges") or {}).items()
         },
+        layout=_layout_config(raw.get("layout") or {}),
+        collapse={
+            name: CollapseRule(rule["source_slot"], rule["target_slot"])
+            for name, rule in (raw.get("collapse") or {}).items()
+        },
     )
     _validate_against_schema(config, schema_view, path)
     return config
+
+
+def _layout_config(raw: dict) -> LayoutConfig:
+    engines = raw.get("engines") or {"fcose": {}}
+    return LayoutConfig(
+        default=raw.get("default", next(iter(engines))),
+        engines={name: options or {} for name, options in engines.items()},
+    )
 
 
 def _node_style(raw: dict, default: NodeStyle) -> NodeStyle:
@@ -101,6 +131,31 @@ def _validate_against_schema(
                        ("detail_slot", config.detail_slot)):
         if slot not in known_slots:
             problems.append(f"{role} {slot!r} is not a slot of the schema")
+
+    problems += [
+        f"unknown layout engine {name!r} (known: {KNOWN_ENGINES})"
+        for name in config.layout.engines
+        if name not in KNOWN_ENGINES
+    ]
+    if config.layout.default not in config.layout.engines:
+        problems.append(
+            f"default engine {config.layout.default!r} is not in engines"
+        )
+
+    for class_name, rule in config.collapse.items():
+        if class_name not in known_classes:
+            problems.append(f"collapse: unknown class {class_name!r}")
+            continue
+        class_slots = {
+            slot.name for slot in schema_view.class_induced_slots(class_name)
+            if slot.range in known_classes
+        }
+        for slot in (rule.source_slot, rule.target_slot):
+            if slot not in class_slots:
+                problems.append(
+                    f"collapse {class_name}: {slot!r} is not an "
+                    "object-valued slot of that class"
+                )
 
     if problems:
         raise ValueError(f"{source}: " + "; ".join(problems))

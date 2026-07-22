@@ -36,3 +36,22 @@ edges:
   to_location:
     color: "#9ca3af"
     line_style: solid
+
+layout:
+  default: fcose
+  engines:
+    fcose:
+      quality: default
+      nodeDimensionsIncludeLabels: true
+      idealEdgeLength: 70
+      degreeScaledEdgeLength: true
+    elk:
+      nodeDimensionsIncludeLabels: true
+      elk:
+        algorithm: layered
+        elk.direction: RIGHT
+
+collapse:
+  Circuit:
+    source_slot: from_location
+    target_slot: to_location

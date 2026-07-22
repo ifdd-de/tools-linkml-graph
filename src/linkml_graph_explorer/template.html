@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <title>__TITLE__</title>
 <script>__CYTOSCAPE_BUNDLE__</script>
+__ENGINE_SCRIPTS__
 <style>
   html, body { margin: 0; height: 100%; font-family: sans-serif; }
   #cy { width: 100%; height: calc(100% - 3rem); }
@@ -19,6 +20,7 @@
 <body>
 
 <div id="toolbar">
+  <select id="layout-select">__ENGINE_OPTIONS__</select>
   <button id="btn-reset">__L_RESET__</button>
   <button id="btn-fit">__L_FIT__</button>
   <button id="btn-zoom-in">+</button>
@@ -26,8 +28,11 @@
   <span style="border-left:1px solid #ccc; height:1.5rem;"></span>
   <button id="btn-save-layout">__L_SAVE__</button>
   <button id="btn-load-layout">__L_LOAD__</button>
+  <button id="btn-png">PNG</button>
   <input type="file" id="file-layout" accept=".json,application/json"
          style="display:none">
+  <span style="border-left:1px solid #ccc; height:1.5rem;"></span>
+  __COMPACT_CONTROL__
   __TOGGLES__
 </div>
 <div id="cy"></div>
@@ -47,11 +52,24 @@ __LAYOUT_DATA__
   const data = JSON.parse(document.getElementById("graph-data").textContent);
   const bakedLayout =
     JSON.parse(document.getElementById("layout-data").textContent.trim());
+  const layoutConfig = __LAYOUT_CONFIG__;
+
+  function engineLayout(name) {
+    const options = Object.assign({ name: name, animate: false },
+                                  layoutConfig.engines[name]);
+    if (options.degreeScaledEdgeLength) {
+      delete options.degreeScaledEdgeLength;
+      const base = options.idealEdgeLength || 60;
+      options.idealEdgeLength = edge => base * Math.sqrt(
+        Math.min(edge.source().degree(), edge.target().degree()));
+    }
+    return options;
+  }
 
   const initialLayout = (bakedLayout && bakedLayout.positions)
     ? { name: "preset", fit: false, animate: false,
         positions: n => bakedLayout.positions[n.id()] || { x: 0, y: 0 } }
-    : { name: "cose", animate: false };
+    : engineLayout(layoutConfig.default);
 
   const cy = cytoscape({
     container: document.getElementById("cy"),
@@ -78,10 +96,37 @@ __LAYOUT_DATA__
     if (bakedLayout && bakedLayout.positions) {
       applySavedLayout(bakedLayout);
     } else {
-      cy.layout({ name: "cose", animate: false }).run();
-      cy.fit(undefined, 40);
+      cy.layout(engineLayout(layoutConfig.default)).run();
     }
   }
+
+  document.getElementById("layout-select").addEventListener("change", evt => {
+    cy.layout(engineLayout(evt.target.value)).run();
+  });
+
+  const compactToggle = document.getElementById("compact-toggle");
+  if (compactToggle) {
+    compactToggle.addEventListener("change", () => {
+      const on = compactToggle.checked;
+      const reified = cy.nodes(".reified");
+      reified.toggleClass("compact-hidden", on);
+      reified.connectedEdges().not(".derived")
+             .toggleClass("compact-hidden", on);
+      cy.edges(".derived").toggleClass("compact", on);
+    });
+  }
+
+  document.getElementById("btn-png").addEventListener("click", () => {
+    const blob = cy.png({ output: "blob", full: false, scale: 2,
+                          bg: "#ffffff" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "__PNG_FILENAME__";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  });
 
   cy.on("tap", "node", evt => {
     cy.elements().removeClass("highlighted");
@@ -114,8 +159,9 @@ __LAYOUT_DATA__
   });
 
   document.getElementById("btn-reset").addEventListener("click", () => {
-    cy.elements().removeClass("hidden highlighted");
+    cy.elements().removeClass("hidden highlighted compact compact-hidden");
     document.querySelectorAll(".cls-toggle").forEach(cb => cb.checked = true);
+    if (compactToggle) compactToggle.checked = false;
     runDefaultLayout();
   });
 

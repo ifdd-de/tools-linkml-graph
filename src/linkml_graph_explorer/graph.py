@@ -25,6 +25,10 @@ def build_elements(
     for member_class, instance in _instances(schema_view, root_object, root_class):
         nodes.append(_node_for(schema_view, member_class, instance, config))
         edges.extend(_edges_for(schema_view, member_class, instance))
+        if member_class in config.collapse:
+            edges.extend(
+                _derived_edge(schema_view, member_class, instance, config)
+            )
 
     return {"nodes": nodes, "edges": _drop_dangling(edges, nodes)}
 
@@ -44,12 +48,37 @@ def _node_for(
     schema_view: SchemaView, member_class: str, instance: dict, config: VizConfig
 ) -> dict:
     identifier = _identifier_of(schema_view, member_class, instance)
-    return {"data": {
+    node = {"data": {
         "id": identifier,
         "label": instance.get(config.label_slot, identifier),
         "type": member_class,
         "detail": _detail_text(schema_view, member_class, instance, config),
     }}
+    if member_class in config.collapse:
+        node["classes"] = "reified"
+    return node
+
+
+def _derived_edge(
+    schema_view: SchemaView, member_class: str, instance: dict, config: VizConfig
+):
+    rule = config.collapse[member_class]
+    source = instance.get(rule.source_slot)
+    target = instance.get(rule.target_slot)
+    if source is None or target is None:
+        return
+    identifier = _identifier_of(schema_view, member_class, instance)
+    yield {
+        "data": {
+            "id": f"{identifier}--collapsed",
+            "source": str(source),
+            "target": str(target),
+            "label": instance.get(config.label_slot, identifier),
+            "detail": _detail_text(schema_view, member_class, instance, config),
+            "relation": member_class,
+        },
+        "classes": "derived",
+    }
 
 
 def _edges_for(schema_view: SchemaView, member_class: str, instance: dict):

@@ -38,6 +38,13 @@ BASE_EDGE_STYLE = {
 }
 
 
+ENGINE_BUNDLES = {
+    "fcose": ("vendor/layout-base.js", "vendor/cose-base.js",
+              "vendor/cytoscape-fcose.js"),
+    "elk": ("vendor/elk.bundled.js", "vendor/cytoscape-elk.js"),
+}
+
+
 def build_stylesheet(
     config: VizConfig,
     node_classes: list[str],
@@ -63,10 +70,20 @@ def build_stylesheet(
                 "line-style": style.line_style,
             },
         })
+    for class_name in config.collapse:
+        color = config.node_style(class_name).color
+        stylesheet.append({
+            "selector": f'edge[relation = "{class_name}"]',
+            "style": {"line-color": color, "target-arrow-color": color,
+                      "width": 2.5},
+        })
     stylesheet += [
+        {"selector": "edge.derived", "style": {"display": "none"}},
+        {"selector": "edge.derived.compact", "style": {"display": "element"}},
         {"selector": ".highlighted",
          "style": {"border-width": 3, "border-color": "#f59e0b"}},
         {"selector": ".hidden", "style": {"display": "none"}},
+        {"selector": ".compact-hidden", "style": {"display": "none"}},
     ]
     return stylesheet
 
@@ -87,7 +104,10 @@ def render_explorer_html(
 
     elements = build_elements(schema_view, root_object, root_class, config)
     node_classes = sorted({node["data"]["type"] for node in elements["nodes"]})
-    edge_labels = sorted({edge["data"]["label"] for edge in elements["edges"]})
+    edge_labels = sorted({
+        edge["data"]["label"] for edge in elements["edges"]
+        if "relation" not in edge["data"]
+    })
 
     html = _read_packaged("template.html")
     replacements = {
@@ -99,12 +119,19 @@ def render_explorer_html(
         "__L_LOAD__": escape(_("Load layout")),
         "__L_LOAD_ERROR__": escape(_("Could not read layout file: ")),
         "__TOGGLES__": _toggle_markup(node_classes),
+        "__COMPACT_CONTROL__": _compact_markup(config, _),
+        "__ENGINE_OPTIONS__": _engine_options_markup(config),
+        "__LAYOUT_CONFIG__": json.dumps(
+            {"default": config.layout.default, "engines": config.layout.engines}
+        ),
         "__GRAPH_DATA__": json.dumps(elements, ensure_ascii=False, indent=1),
         "__LAYOUT_DATA__": _layout_json(positions_path),
         "__LAYOUT_FILENAME__": f"{data_path.stem}_layout.json",
+        "__PNG_FILENAME__": f"{data_path.stem}_view.png",
         "__STYLESHEET__": json.dumps(
             build_stylesheet(config, node_classes, edge_labels), indent=1
         ),
+        "__ENGINE_SCRIPTS__": _engine_scripts(config),
         "__CYTOSCAPE_BUNDLE__": _read_packaged("vendor/cytoscape.min.js"),
     }
     for placeholder, value in replacements.items():
@@ -121,6 +148,32 @@ def _toggle_markup(node_classes: list[str]) -> str:
         f'<label><input type="checkbox" class="cls-toggle" '
         f'value="{escape(name)}" checked> {escape(name)}</label>'
         for name in node_classes
+    )
+
+
+def _compact_markup(config: VizConfig, _) -> str:
+    if not config.collapse:
+        return ""
+    return (
+        '<label><input type="checkbox" id="compact-toggle"> '
+        f'{escape(_("Compact view"))}</label>'
+    )
+
+
+def _engine_options_markup(config: VizConfig) -> str:
+    return "\n".join(
+        f'<option value="{escape(name)}"'
+        f'{" selected" if name == config.layout.default else ""}>'
+        f'{escape(name)}</option>'
+        for name in config.layout.engines
+    )
+
+
+def _engine_scripts(config: VizConfig) -> str:
+    return "\n".join(
+        f"<script>{_read_packaged(bundle)}</script>"
+        for name in config.layout.engines
+        for bundle in ENGINE_BUNDLES[name]
     )
 
 

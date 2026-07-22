@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "linkml-graph-explorer"
-version = "0.1.3"
+version = "0.1.4"
 description = "Render LinkML instance data as documents (linkml-renderer) and as standalone interactive exploration graphs (Cytoscape.js), driven entirely by the schema and a separate visualization configuration"
 readme = "README.md"
 requires-python = ">=3.10"

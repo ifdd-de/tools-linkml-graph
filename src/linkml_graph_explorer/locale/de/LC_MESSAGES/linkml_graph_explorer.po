@@ -27,3 +27,6 @@ msgstr "Layout laden"
 
 msgid "Could not read layout file: "
 msgstr "Layout-Datei konnte nicht gelesen werden: "
+
+msgid "Compact view"
+msgstr "Kompaktansicht"
