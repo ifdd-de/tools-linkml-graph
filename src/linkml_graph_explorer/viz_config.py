@@ -10,6 +10,7 @@ from linkml_runtime import SchemaView
 
 
 KNOWN_ENGINES = ("fcose", "elk")
+PARENT = "_parent_"
 
 
 @dataclass(frozen=True)
@@ -150,11 +151,14 @@ def _validate_against_schema(
             slot.name for slot in schema_view.class_induced_slots(class_name)
             if slot.range in known_classes
         }
-        for slot in (rule.source_slot, rule.target_slot):
+        for role, slot in (("source", rule.source_slot),
+                           ("target", rule.target_slot)):
+            if role == "source" and slot == PARENT:
+                continue
             if slot not in class_slots:
                 problems.append(
                     f"collapse {class_name}: {slot!r} is not an "
-                    "object-valued slot of that class"
+                    f"object-valued slot of that class (or {PARENT!r})"
                 )
 
     if problems:

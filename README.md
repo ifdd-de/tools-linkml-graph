@@ -23,6 +23,12 @@ The LinkML schema is the single structural authority:
   the slot name; the slot `description` becomes the edge's mouse-over text.
 - **Literal-valued slots** (`description`, `voltage_kv`, …) become node
   attributes that feed the detail-on-demand text.
+- **Inlined instances** (`inlined: true`, at any nesting depth, list or
+  compact dict form) become nodes of their own, connected to their
+  containing instance by a containment edge labeled with the slot name.
+  Multivalued reference slots yield one edge per entry. Only classes with
+  an identifier slot become nodes; inlined objects of identifier-less
+  classes are intentionally not rendered (no synthetic ids).
 
 Everything visual — colors, shapes, edge line styles, which slot provides
 the label and which the detail text — lives in a separate
@@ -119,6 +125,15 @@ declares such classes and their endpoint slots:
 ```yaml
 collapse:
   Circuit: { source_slot: from_location, target_slot: to_location }
+```
+
+For inlined relation objects whose source is implied by containment
+(`outgoing_flows: {range: Flow, inlined: true}` inside the source class),
+use the `_parent_` marker instead of a source slot:
+
+```yaml
+collapse:
+  Flow: { source_slot: _parent_, target_slot: to_system }
 ```
 
 The export then contains, in addition to the regular elements, one derived

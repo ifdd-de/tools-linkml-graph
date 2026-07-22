@@ -1,3 +1,3 @@
 """Render LinkML instance data as documents and interactive exploration graphs."""
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
