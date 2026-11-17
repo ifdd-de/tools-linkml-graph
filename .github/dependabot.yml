@@ -1,0 +1,21 @@
+# Dependabot version updates for tools-linkml-graph.
+# Security updates are a repository setting and do not depend on this file.
+# Not covered: the bundled JavaScript in src/linkml_graph_explorer/vendor/.
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns: ["*"]
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      minor-and-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]

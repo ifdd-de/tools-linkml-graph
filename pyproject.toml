@@ -9,7 +9,8 @@ description = "Render LinkML instance data as documents (linkml-renderer) and as
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "BSD-3-Clause" }
-authors = [{ name = "linkml-graph-explorer contributors" }]
+authors = [{ name = "Markus Leist", email = "markus@lei.st" }]
+maintainers = [{ name = "ifdd.de contributors", email = "maintainers@ifdd.de" }]
 keywords = ["linkml", "graph", "visualization", "cytoscape", "json-ld"]
 classifiers = [
     "License :: OSI Approved :: BSD License",
@@ -25,6 +26,9 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest>=8", "linkml>=1.7"]
+
+[project.urls]
+Repository = "https://github.com/ifdd-de/tools-linkml-graph"
 
 [project.scripts]
 graph-explorer = "linkml_graph_explorer.cli:main"

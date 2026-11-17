@@ -1,8 +1,8 @@
 # linkml-graph-explorer
 
-[![CI](https://github.com/mleist/linkml-graph-explorer/actions/workflows/ci.yml/badge.svg)](https://github.com/mleist/linkml-graph-explorer/actions/workflows/ci.yml)
+[![CI](https://github.com/ifdd-de/tools-linkml-graph/actions/workflows/ci.yml/badge.svg)](https://github.com/ifdd-de/tools-linkml-graph/actions/workflows/ci.yml)
 [![License: BSD-3-Clause](https://img.shields.io/badge/license-BSD--3--Clause-green.svg)](LICENSE)
-![GitHub last commit](https://img.shields.io/github/last-commit/mleist/linkml-graph-explorer)
+![GitHub last commit](https://img.shields.io/github/last-commit/ifdd-de/tools-linkml-graph)
 
 Render [LinkML](https://linkml.io/) instance data as documents
 ([linkml-renderer](https://github.com/linkml/linkml-renderer)) and as
@@ -46,9 +46,8 @@ pip install -e ".[test]"
 python tools/compile_translations.py
 ```
 
-Tested with Python 3.10/3.12, linkml-renderer 0.3.1 and Cytoscape.js 3.34.0
-(bundled under `src/linkml_graph_explorer/vendor/`, MIT license, header
-preserved).
+Requires Python 3.10 or newer. Cytoscape.js 3.34.0 and the layout extensions
+are bundled under `src/linkml_graph_explorer/vendor/` with their licenses.
 
 ## Usage
 
@@ -232,5 +231,11 @@ linkml-graph-explorer/
 
 BSD 3-Clause, see [LICENSE](LICENSE). Bundled third-party components keep
 their own licenses in `src/linkml_graph_explorer/vendor/`: Cytoscape.js,
-cytoscape-fcose (with layout-base/cose-base) and cytoscape-elk are MIT;
-elkjs is EPL-2.0.
+cytoscape-fcose (with layout-base 2.0.1 and cose-base 2.2.0) and cytoscape-elk
+are MIT; elkjs is EPL-2.0.
+
+## AI assistance
+
+Parts of this repository, in particular tests, test data and documentation,
+were developed or improved with the help of large language models. The
+maintainer has reviewed and approved them.
