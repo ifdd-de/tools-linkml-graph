@@ -3,7 +3,10 @@
 All notable changes to this project are documented in this file. Versions
 follow Semantic Versioning.
 
-## [Unreleased]
+## [0.1.5] - 2026-11-17
+
+First release from `ifdd-de/tools-linkml-graph` (tag `v0.1.5`). Earlier
+changes in `mleist/linkml-graph-explorer` are not recorded here.
 
 ### Changed
 - The repository moved to the GitHub organisation `ifdd-de` as
