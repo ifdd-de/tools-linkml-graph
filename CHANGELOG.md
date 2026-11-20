@@ -3,6 +3,11 @@
 All notable changes to this project are documented in this file. Versions
 follow Semantic Versioning.
 
+## [Unreleased]
+
+- CI: GitHub Actions pinned to commit SHAs (version as comment),
+  `persist-credentials: false` on every checkout.
+
 ## [0.1.5] - 2026-11-17
 
 First release from `ifdd-de/tools-linkml-graph` (tag `v0.1.5`). Earlier
